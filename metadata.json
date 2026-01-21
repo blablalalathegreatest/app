@@ -1,0 +1,8 @@
+
+{
+  "name": "blablalalarchive.",
+  "description": "A minimalist, aesthetic K-pop collection app for photocards and photos, inspired by woset design language.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
