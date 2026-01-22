@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import Layout from './components/Layout';
 import PhotocardGrid from './components/PhotocardGrid';
@@ -10,15 +9,32 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [selectedCategory, setSelectedCategory] = useState<IdolCategory | 'All'>('All');
   const [selectedMusicCategory, setSelectedMusicCategory] = useState<IdolCategory | 'All'>('All');
-  const [playlists, setPlaylists] = useState<PlaylistLink[]>(INITIAL_PLAYLISTS);
-  const [photocards, setPhotocards] = useState<Photocard[]>(INITIAL_PHOTOCARDS);
+  
+  // 初始化時嘗試從 localStorage 讀取資料，若無則使用初始值
+  const [playlists, setPlaylists] = useState<PlaylistLink[]>(() => {
+    const saved = localStorage.getItem('blarchive_playlists');
+    return saved ? JSON.parse(saved) : INITIAL_PLAYLISTS;
+  });
+  
+  const [photocards, setPhotocards] = useState<Photocard[]>(() => {
+    const saved = localStorage.getItem('blarchive_photocards');
+    return saved ? JSON.parse(saved) : INITIAL_PHOTOCARDS;
+  });
+
   const [isAddingPlaylist, setIsAddingPlaylist] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isCollectionEditMode, setIsCollectionEditMode] = useState(false);
   const [newPlaylist, setNewPlaylist] = useState({ name: '', url: '', category: 'Riize' as IdolCategory });
-
-  // Add Content Menu State
   const [showAddMenu, setShowAddMenu] = useState(false);
+
+  // 當資料變動時，自動同步到 localStorage
+  useEffect(() => {
+    localStorage.setItem('blarchive_playlists', JSON.stringify(playlists));
+  }, [playlists]);
+
+  useEffect(() => {
+    localStorage.setItem('blarchive_photocards', JSON.stringify(photocards));
+  }, [photocards]);
 
   // Camera States
   const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -64,7 +80,6 @@ const App: React.FC = () => {
     }
   };
 
-  // Camera Functions
   const startCamera = async () => {
     setShowAddMenu(false);
     try {
@@ -74,7 +89,6 @@ const App: React.FC = () => {
       });
       setCameraStream(stream);
       setIsCameraOpen(true);
-      // Wait for the next tick to ensure videoRef is available
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -103,7 +117,7 @@ const App: React.FC = () => {
       const ctx = canvas.getContext('2d');
       if (ctx) {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageUrl = canvas.toDataURL('image/jpeg');
+        const imageUrl = canvas.toDataURL('image/jpeg', 0.8); // 稍微壓縮以節省空間
         
         const newCard: Photocard = {
           id: Date.now().toString(),
@@ -233,7 +247,6 @@ const App: React.FC = () => {
         </button>
       </div>
       
-      {/* Camera UI Overlay */}
       {isCameraOpen && (
         <div className="fixed inset-0 bg-black z-[100] flex flex-col animate-in fade-in duration-300">
           <div className="flex-1 relative flex items-center justify-center overflow-hidden">
@@ -243,7 +256,6 @@ const App: React.FC = () => {
               playsInline 
               className="w-full h-full object-cover"
             />
-            {/* Minimalist Camera Overlay - Frame */}
             <div className="absolute inset-8 border border-white/30 pointer-events-none flex items-center justify-center">
               <div className="w-4 h-4 border-t border-l border-white/60 absolute top-0 left-0"></div>
               <div className="w-4 h-4 border-t border-r border-white/60 absolute top-0 right-0"></div>
@@ -264,7 +276,7 @@ const App: React.FC = () => {
             >
               <div className="w-12 h-12 bg-white rounded-full"></div>
             </button>
-            <div className="w-[60px]"></div> {/* Spacer */}
+            <div className="w-[60px]"></div>
           </div>
           <canvas ref={canvasRef} className="hidden" />
         </div>
@@ -367,7 +379,6 @@ const App: React.FC = () => {
         <div className="space-y-6">
           {filtered.map((pl) => (
             <div key={pl.globalIndex} className="group relative">
-              {/* Management Controls - only visible in edit mode */}
               {isEditMode && (
                 <div className="absolute -top-3 right-0 flex gap-1 z-10 animate-in fade-in zoom-in duration-200">
                   <div className="flex bg-white border border-[#cbc9c4] shadow-sm rounded-sm overflow-hidden">
