@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>blablalalarchive.</title>
+    
+    <!-- PWA & iOS App 設定 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="blarchive.">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="https://i.pinimg.com/736x/f9/58/7f/f9587f77d1dd2c21143fd0f198f4953c.jpg">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
@@ -11,6 +19,8 @@
             font-family: 'Inter', sans-serif;
             background-color: #e8e6e1;
             color: #1a1a1a;
+            overscroll-behavior-y: none;
+            padding-top: env(safe-area-inset-top); /* 確保靈動島/瀏海不會遮到內容 */
         }
         .font-serif {
             font-family: 'Playfair+Display', serif;
